@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blocos Partidários</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            padding: 10px;
+            margin-bottom: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        li:nth-child(odd) {
+            background-color: #5a649c;
+        }
+
+        li:nth-child(even) {
+            background-color: #a5b2d4;
+        }
+
+        li:hover {
+            background-color: #a5b2d4;
+        }
+
+        #detalhes {
+            padding: 15px;
+            background-color: #a5b2d4;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            max-width: 300px;
+            display: none; 
+        }
+
+        #detalhes h3 {
+            margin-top: 0;
+        }
+
+        #deputados-list {
+            margin-top: 10px;
+            padding-left: 0;
+            list-style-type: none;
+        }
+
+        #deputados-list li {
+            padding: 8px;
+            background-color: #a5b2d4;
+            margin-bottom: 5px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Blocos Partidários</h2>
+    <ul id="bloco-list"></ul>
+
+    <div id="detalhes">
+        <h3>Detalhes do Bloco</h3>
+        <p><strong>Nome:</strong> <span id="nome"></span></p>
+        <p><strong>ID:</strong> <span id="id"></span></p>
+        <p><strong>ID Legislatura:</strong> <span id="idLegislatura"></span></p>
+        <button id="btn-deputados" style="margin-top:10px;">Ver Deputados</button>
+    </div>
+
+    <ul id="deputados-list"></ul>
+
+    <script type="text/javascript">
+        const url = 'https://dadosabertos.camara.leg.br/api/v2/blocos?ordem=ASC&ordenarPor=nome';
+        
+ 
+        fetch(url)
+            .then(response => response.json())  
+            .then(data => {
+                const blocos = data.dados;  
+                const lista = document.getElementById('bloco-list');
+                
+                blocos.forEach((bloco) => {
+                    const nome = bloco.nome;
+                    const id = bloco.id;
+                    const idLegislatura = bloco.idLegislatura;
+
+                   
+                    const li = document.createElement('li');
+                    li.textContent = nome;
+
+                 
+                    li.addEventListener('click', () => {
+                        document.getElementById('nome').textContent = nome;
+                        document.getElementById('id').textContent = id;
+                        document.getElementById('idLegislatura').textContent = idLegislatura;
+                        document.getElementById('detalhes').style.display = 'block';
+                        
+                       
+                        const btnDeputados = document.getElementById('btn-deputados');
+                        btnDeputados.onclick = function() {
+                            fetchDeputados(idLegislatura);
+                        };
+                    });
+
+                    lista.appendChild(li);
+                });
+            })
+            .catch(error => console.error('Erro ao buscar dados dos blocos:', error));
+
+        // Função para buscar deputados de uma legislatura
+        function fetchDeputados(idLegislatura) {
+            const urlDeputados = `https://dadosabertos.camara.leg.br/api/v2/deputados?ordem=ASC&ordenarPor=nome&idLegislatura=${idLegislatura}`;
+
+            fetch(urlDeputados)
+                .then(response => response.json())
+                .then(data => {
+                    const deputados = data.dados;
+                    const deputadosList = document.getElementById('deputados-list');
+                    deputadosList.innerHTML = '';  
+
+                    if (deputados.length === 0) {
+                        deputadosList.innerHTML = '<li>Nenhum deputado encontrado.</li>';
+                    } else {
+                        deputados.forEach(deputado => {
+                            const li = document.createElement('li');
+                            li.textContent = deputado.nome;  
+                            deputadosList.appendChild(li);
+                        });
+                    }
+                })
+                .catch(error => console.error('Erro ao buscar deputados:', error));
+        }
+    </script>
+</body>
+</html>
