@@ -1,6 +1,6 @@
 # Partidos e Deputados - Projeto de Consumo de API da Câmara
 
-Este projeto é uma aplicação web simples que faz parte da selação de desenvolvedores IFINET. A aplicação consome as APIs públicas da Câmara dos Deputados do Brasil para exibir uma lista de partidos e, ao selecionar um partido, exibir a lista de deputados vinculados a ele.
+Este projeto é uma aplicação web simples que faz parte da selação de desenvolvedores Infnet . A aplicação consome as APIs públicas da Câmara dos Deputados do Brasil para exibir uma lista de partidos e, ao selecionar um partido, exibir a lista de deputados vinculados a ele.
 
 ## Funcionalidades
 
