@@ -18,9 +18,8 @@ Este projeto é uma aplicação web simples que faz parte da selação de desenv
 
 ## Estrutura do Projeto
 
-- `index.html`: Página principal que contém a estrutura da aplicação.
-- `style.css`: Estilização da página (embutida no exemplo, mas pode ser separada).
-- `script.js`: Script principal que realiza as chamadas às APIs e manipula o DOM (no exemplo, também embutido no HTML).
+- `index.html`: Página principal que contém a estrutura da aplicação, estilização de pagina e scripts.
+
 
 ## Fluxo da Aplicação
 
