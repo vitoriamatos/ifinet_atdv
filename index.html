@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blocos Partidários</title>
+    <title>Partidos e Deputados</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -67,80 +67,76 @@
     </style>
 </head>
 <body>
-    <h2>Blocos Partidários</h2>
-    <ul id="bloco-list"></ul>
+    <h2>Lista de Partidos</h2>
+    <ul id="partido-list"></ul>
 
     <div id="detalhes">
-        <h3>Detalhes do Bloco</h3>
+        <h3>Detalhes do Partido</h3>
         <p><strong>Nome:</strong> <span id="nome"></span></p>
         <p><strong>ID:</strong> <span id="id"></span></p>
-        <p><strong>ID Legislatura:</strong> <span id="idLegislatura"></span></p>
         <button id="btn-deputados" style="margin-top:10px;">Ver Deputados</button>
     </div>
 
     <ul id="deputados-list"></ul>
 
     <script type="text/javascript">
-        const url = 'https://dadosabertos.camara.leg.br/api/v2/blocos?ordem=ASC&ordenarPor=nome';
-        
- 
-        fetch(url)
-            .then(response => response.json())  
-            .then(data => {
-                const blocos = data.dados;  
-                const lista = document.getElementById('bloco-list');
-                
-                blocos.forEach((bloco) => {
-                    const nome = bloco.nome;
-                    const id = bloco.id;
-                    const idLegislatura = bloco.idLegislatura;
+        const urlPartidos = 'https://dadosabertos.camara.leg.br/api/v2/partidos?ordem=ASC&ordenarPor=sigla';
 
-                   
-                    const li = document.createElement('li');
-                    li.textContent = nome;
+        function fetchPartidos() {
+            fetch(urlPartidos)
+                .then(response => response.json())
+                .then(data => {
+                    const partidos = data.dados;  
+                    const lista = document.getElementById('partido-list');
 
-                 
-                    li.addEventListener('click', () => {
-                        document.getElementById('nome').textContent = nome;
-                        document.getElementById('id').textContent = id;
-                        document.getElementById('idLegislatura').textContent = idLegislatura;
-                        document.getElementById('detalhes').style.display = 'block';
-                        
-                       
-                        const btnDeputados = document.getElementById('btn-deputados');
-                        btnDeputados.onclick = function() {
-                            fetchDeputados(idLegislatura);
-                        };
+                    partidos.forEach(partido => {
+                        const li = document.createElement('li');
+                        li.textContent = partido.nome;
+                        li.setAttribute('data-id', partido.id);
+
+                        li.addEventListener('click', () => {
+                            console.log(partido.idLegislatura);
+                            document.getElementById('nome').textContent = partido.nome;
+                            document.getElementById('id').textContent = partido.id;
+                            document.getElementById('detalhes').style.display = 'block';
+
+                            const btnDeputados = document.getElementById('btn-deputados');
+                            btnDeputados.onclick = function() {
+                               
+                                document.getElementById('deputados-list').innerHTML = ''; 
+                                fetchDeputados(partido.sigla); 
+                            };
+                        });
+
+                        lista.appendChild(li);
                     });
+                })
+                .catch(error => console.error('Erro ao buscar dados dos partidos:', error));
+        }
 
-                    lista.appendChild(li);
-                });
-            })
-            .catch(error => console.error('Erro ao buscar dados dos blocos:', error));
-
-        // Função para buscar deputados de uma legislatura
-        function fetchDeputados(idLegislatura) {
-            const urlDeputados = `https://dadosabertos.camara.leg.br/api/v2/deputados?ordem=ASC&ordenarPor=nome&idLegislatura=${idLegislatura}`;
+ 
+        function fetchDeputados(siglaPartido) {
+            const urlDeputados = `https://dadosabertos.camara.leg.br/api/v2/deputados?ordem=ASC&ordenarPor=nome&siglaPartido=${siglaPartido}`;
 
             fetch(urlDeputados)
                 .then(response => response.json())
                 .then(data => {
                     const deputados = data.dados;
                     const deputadosList = document.getElementById('deputados-list');
-                    deputadosList.innerHTML = '';  
 
                     if (deputados.length === 0) {
                         deputadosList.innerHTML = '<li>Nenhum deputado encontrado.</li>';
                     } else {
                         deputados.forEach(deputado => {
                             const li = document.createElement('li');
-                            li.textContent = deputado.nome;  
+                            li.textContent = `${deputado.nome} - ${deputado.siglaPartido}`;
                             deputadosList.appendChild(li);
                         });
                     }
                 })
                 .catch(error => console.error('Erro ao buscar deputados:', error));
         }
+        window.onload = fetchPartidos;
     </script>
 </body>
 </html>
